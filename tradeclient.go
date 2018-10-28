@@ -31,6 +31,9 @@ func (e TradeClient) OnLogout(sessionID quickfix.SessionID) {
 
 //FromAdmin implemented as part of Application interface
 func (e TradeClient) FromAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) (reject quickfix.MessageRejectError) {
+
+	//t, _ := msg.MsgType()
+	//fmt.Printf("From Admin type %s\n", t)
 	//fmt.Printf("From Admin %s\n", msg.String())
 	return
 }
@@ -51,7 +54,7 @@ func (e TradeClient) ToApp(msg *quickfix.Message, sessionID quickfix.SessionID) 
 func (e TradeClient) FromApp(msg *quickfix.Message, sessionID quickfix.SessionID) (reject quickfix.MessageRejectError) {
 
 	fmt.Printf("\n\nFromApp: %s\n", msg.String())
-	showMenu()
+	//showMenu()
 	return
 }
 
@@ -100,7 +103,10 @@ func main() {
 	quickfix.Send(h)
 
 	//test:= orderstatusrequest.New()
-
+	SenderCompID, _ := appSettings.GlobalSettings().Setting("SenderCompID")
+	TargetCompID, _ := appSettings.GlobalSettings().Setting("TargetCompID")
+	internal.SenderId = SenderCompID
+	internal.TargetId = TargetCompID
 	showMenu()
 
 	initiator.Stop()

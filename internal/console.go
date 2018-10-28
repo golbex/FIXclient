@@ -37,6 +37,11 @@ import (
 	fix42st "github.com/quickfixgo/fix42/orderstatusrequest"
 )
 
+var (
+	SenderId = ""
+	TargetId = ""
+)
+
 func queryString(fieldName string) string {
 	fmt.Printf("%v: ", fieldName)
 	scanner := bufio.NewScanner(os.Stdin)
@@ -120,6 +125,26 @@ func queryVersion() (string, error) {
 	return "", fmt.Errorf("unknown BeginString choice: %v", scanner.Text())
 }
 
+func querySymbol() field.SymbolField {
+	fmt.Println()
+	fmt.Println("1) BTC-USD")
+	fmt.Println("2) LTC-USD")
+	fmt.Println("3) ETH-USD")
+	fmt.Print("Symbol: ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+
+	switch scanner.Text() {
+	case "1":
+		return field.NewSymbol("BTC-USD")
+	case "2":
+		return field.NewSymbol("LTC-USD")
+	case "3":
+		return field.NewSymbol("ETH-USD")
+	}
+	return field.NewSymbol("")
+}
+
 func queryClOrdID() field.ClOrdIDField {
 	return field.NewClOrdID(queryString("ClOrdID"))
 }
@@ -128,9 +153,9 @@ func queryOrigClOrdID() field.OrigClOrdIDField {
 	return field.NewOrigClOrdID(("OrigClOrdID"))
 }
 
-func querySymbol() field.SymbolField {
-	return field.NewSymbol(queryString("Symbol"))
-}
+//func querySymbol() field.SymbolField {
+//	return field.NewSymbol(queryString("Symbol"))
+//}
 
 func querySide() field.SideField {
 	choices := []string{
@@ -207,11 +232,13 @@ func queryStopPx() field.StopPxField {
 }
 
 func querySenderCompID() field.SenderCompIDField {
-	return field.NewSenderCompID(queryString("SenderCompID"))
+	return field.NewSenderCompID(SenderId)
+	//return field.NewSenderCompID(queryString("SenderCompID"))
 }
 
 func queryTargetCompID() field.TargetCompIDField {
-	return field.NewTargetCompID(queryString("TargetCompID"))
+	return field.NewTargetCompID(TargetId)
+	//return field.NewTargetCompID(queryString("TargetCompID"))
 }
 
 func queryTargetSubID() field.TargetSubIDField {
@@ -235,11 +262,12 @@ type header interface {
 func queryHeader(h header) {
 	h.Set(querySenderCompID())
 	h.Set(queryTargetCompID())
-	if ok := queryConfirm("Use a TargetSubID"); !ok {
-		return
-	}
 
-	h.Set(queryTargetSubID())
+	//if ok := queryConfirm("Use a TargetSubID"); !ok {
+	//	return
+	//}
+	//
+	//h.Set(queryTargetSubID())
 }
 
 func queryNewOrderSingle40() fix40nos.NewOrderSingle {
